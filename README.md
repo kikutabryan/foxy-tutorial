@@ -258,7 +258,13 @@ This function is called when a new `Image` message is received. It converts the 
 
 You have to add your node's entry points to the `setup.py` file for the nodes to be correctly linked to your package.
 
-Replace the content of the `setup.py` file located in the `video_tutorial` directory with the following:
+To access teh `setup.py` file, navigate back one directory:
+
+```bash
+cd ..
+```
+
+Open and replace the content of the `setup.py` file located in the `video_tutorial` directory with the following:
 
 ```python
 from setuptools import setup
