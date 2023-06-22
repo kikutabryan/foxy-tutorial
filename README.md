@@ -1,180 +1,267 @@
-# ROS2 Foxy Tutorial: Creating a Simple Publisher and Subscriber in Python
+# ROS2 Foxy: Video Stream Publisher and Grayscale Converter Subscriber
 
-This tutorial will walk you through the process of creating a simple ROS2 package with a publisher and a subscriber node in Python. 
+This tutorial will guide you through the process of creating a ROS2 package with a publisher and subscriber node in Python. The publisher node captures video from the built-in webcam using OpenCV, then publishes it to a topic. The subscriber node receives the video, converts it to grayscale, and displays it.
 
 ## Prerequisites
-1. ROS2 Foxy: If not already installed, you can find instructions on the [official ROS2 website](https://index.ros.org/doc/ros2/Installation/Foxy/). 
 
-## Steps
+- You need to have ROS2 Foxy installed. If you haven't done this already, follow the official guide [here](https://index.ros.org/doc/ros2/Installation/Foxy/).
+- Make sure you have Python3 installed. Most ROS2 distributions require Python3. If you don't have Python3, download it [here](https://www.python.org/downloads/).
+- OpenCV needs to be installed for the video capture functionality. Instructions are [here](https://docs.opencv.org/4.5.0/d2/de6/tutorial_py_setup_in_ubuntu.html).
 
-After installing, open a new terminal and source your ROS2 installation:
+## Step 1: Source ROS2 Foxy
+
+Before creating a new package, you need to source your ROS2 Foxy environment. Open a new terminal window and enter:
+
 ```bash
 source /opt/ros/foxy/setup.bash
 ```
 
-1. **Create a new ROS2 workspace and a new package**
+## Step 2: Creating Workspace and Package
+
+If you haven't set up a workspace yet, create a new one:
 
 ```bash
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
-ros2 pkg create --build-type ament_python py_pub_sub
 ```
 
-This creates a new directory 'ros2_ws' in your home directory. Inside 'ros2_ws/src', a new package 'py_pub_sub' is created.
+Next, create a new package named `video_tutorial` with dependencies on `rclpy` and `std_msgs`.
 
-2. **Navigate to the package directory**
 ```bash
-cd py_pub_sub
+ros2 pkg create --build-type ament_python video_tutorial --dependencies rclpy std_msgs
 ```
 
-Here, you'll see several files. The most important ones for us are:
+Navigate to the newly created package:
 
-- `setup.py`: This is where we define our Python executables.
-- `package.xml`: This is where we define package dependencies.
+```bash
+cd video_tutorial
+```
 
-3. **Modify setup.py**
+## Step 3: Writing the Python Nodes
 
-Edit `setup.py` to look like this:
+We will write two Python scripts, one for the publisher (`video_publisher.py`) and one for the subscriber (`video_subscriber.py`).
+
+### The Publisher Node
+
+Create a new file named `video_publisher.py`:
+
+```python
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+import cv2
+from cv_bridge import CvBridge
+
+# Our Node class inherits from the Node base class.
+class VideoPublisher(Node):
+    def __init__(self):
+        super().__init__('video_publisher')
+        # We create a publisher that publishes to the "VideoTopic" topic.
+        # We also set the Quality of Service profile to 10.
+        self.publisher_ = self.create_publisher(Image, 'VideoTopic', 10)
+        timer_period = 0.1  # seconds (10fps)
+        # We create a timer that calls the "timer_callback" function every 0.1 seconds.
+        self.timer = self.create_timer(timer_period, self.timer_callback)
+        self.i = 0
+        self.bridge = CvBridge()
+        # We start capturing video from the webcam.
+        self.cap = cv2.VideoCapture(0)
+
+    def timer_callback(self):
+        # We capture a new frame from the webcam.
+        ret, frame = self.cap.read()
+        if ret:
+            # We convert the frame to an Image message.
+            msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
+            # We publish the Image message.
+            self.publisher_.publish(msg)
+            self.get_logger().info('Publishing video frame: "%d"' % self.i)
+            self.i += 1
+
+def main(args=None):
+    rclpy.init(args=args)
+    video_publisher = VideoPublisher()
+    rclpy.spin(video_publisher)
+    video_publisher.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+
+The `VideoPublisher` class is a custom Node. Upon initialization, it creates a publisher that publishes `Image` messages on the `VideoTopic` topic.
+
+The `timer_callback` function captures a frame from the webcam every time it is called, converts the frame into an `Image` message, and publishes the message.
+
+### The Subscriber Node
+
+Create a new file named `video_subscriber.py`:
+
+```python
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+import cv2
+from cv_bridge import CvBridge
+
+class VideoSubscriber(Node):
+    def __init__(self):
+        super().__init__('video_subscriber')
+        # We create a subscription to the "VideoTopic" topic.
+        # The "listener_callback" function is called whenever a new message is received.
+        self.subscription = self.create_subscription(
+            Image,
+            'VideoTopic',
+            self.listener_callback,
+            10)
+        self.subscription
+        self.bridge = CvBridge()
+
+    def listener_callback(self, msg):
+        # We convert the Image message to a cv2 image.
+        cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+        # We convert the cv2 image to grayscale.
+        gray_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+        # We display the grayscale image.
+        cv2.imshow('video', gray_image)
+        cv2.waitKey(1)
+
+def main(args=None):
+    rclpy.init(args=args)
+    video_subscriber = VideoSubscriber()
+    rclpy.spin(video_subscriber)
+    video_subscriber.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
+```
+
+The `VideoSubscriber` class is also a custom Node. Upon initialization, it creates a subscription to the `VideoTopic` topic. The `listener_callback` function is called whenever a new message is received.
+
+The `listener_callback` function converts the received `Image` message back into a cv2 image, converts the image to grayscale, and displays the image.
+
+## Step 4: Modifying setup.py
+
+You have to add your node's entry points to the `setup.py` file for the nodes to be correctly linked to your package.
+
+Replace the content of the `setup.py` file located in the `video_tutorial` directory with the following:
 
 ```python
 from setuptools import setup
 
-package_name = 'py_pub_sub'
+package_name = 'video_tutorial'
 
 setup(
     name=package_name,
     version='0.0.0',
     packages=[],
     py_modules=[
-        'py_pub_sub.publisher_node',
-        'py_pub_sub.subscriber_node'
+        'video_publisher',
+        'video_subscriber',
     ],
     install_requires=['setuptools'],
-    data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+    zip_safe=True,
+    author='Your Name',
+    author_email='your.email@example.com',
+    maintainer='Your Name',
+    maintainer_email='your.email@example.com',
+    keywords=['ROS'],
+    classifiers=[
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
+    description='ROS2 video stream publisher and grayscale converter.',
+    license='Apache License, Version 2.0',
+    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'publisher = py_pub_sub.publisher_node:main',
-            'subscriber = py_pub_sub.subscriber_node:main',
+            'video_publisher = video_publisher:main',
+            'video_subscriber = video_subscriber:main',
         ],
     },
 )
 ```
 
-This tells ROS2 that we have two Python scripts, `publisher_node` and `subscriber_node`, and they can be run with the commands `ros2 run py_pub_sub publisher` and `ros2 run py_pub_sub subscriber` respectively.
+The `entry_points` field contains the mapping between the names of your scripts and their location.
 
-4. **Create the Publisher and Subscriber nodes**
+## Step 5: Modifying package.xml
 
-In the `py_pub_sub` directory, create two Python files `publisher_node.py` and `subscriber_node.py`. 
+Open the `package.xml` file in your `video_tutorial` directory and make sure to add `sensor_msgs` and `cv_bridge` as dependencies. Your `package.xml` should look like the following:
 
-**publisher_node.py:**
+```xml
+<?xml version="1.0"?>
+<package format="3">
+  <name>video_tutorial</name>
+  <version>0.0.0</version>
+  <description>My first ROS 2 package</description>
+  <maintainer email="your.email@example.com">Your Name</maintainer>
+  <license>Apache-2.0</license>
 
-```python
-import rclpy
-from rclpy.node import Node
-from std_msgs.msg import String
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-class MyPublisher(Node):
-    def __init__(self):
-        super().__init__('my_publisher')
-        self.publisher_ = self.create_publisher(String, 'topic', 10)
-        timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
-        self.i = 0
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
 
-    def timer_callback(self):
-        msg = String()
-        msg.data = 'Hello, ROS2 ' + str(self.i)
-        self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.i += 1
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
-def main(args=None):
-    rclpy.init(args=args)
-
-    my_publisher = MyPublisher()
-
-    rclpy.spin(my_publisher)
-
-    my_publisher.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
 ```
 
-**subscriber_node.py:**
+The `package.xml` file contains information about the package, including its dependencies. Here we specify that our package depends on `sensor_msgs` and `cv_bridge`.
 
-```python
-import rclpy
-from rclpy.node import Node
-from std_msgs.msg import String
+## Step 6: Build and Source the Package
 
-class MySubscriber(Node):
-    def __init__(self):
-        super().__init__('my_subscriber')
-        self.subscription = self.create_subscription(String, 'topic', self.listener_callback, 10)
-
-    def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg.data)
-
-def main(args=None):
-    rclpy.init(args=args)
-
-    my_subscriber = MySubscriber()
-
-    rclpy.spin(my_subscriber)
-
-    my_subscriber.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
-```
-
-5. **Build and source the package**
-
-Return to the workspace directory and build your package:
+Navigate to the root of your workspace:
 
 ```bash
 cd ~/ros2_ws
-colcon build --packages-select py_pub_sub
 ```
 
-After building, don't forget to source the workspace:
+Build the workspace:
 
 ```bash
-source ~/ros2_ws/install/setup.bash
+colcon build
 ```
 
-Now your nodes should be ready to run.
-
-6. **Running the Publisher and Subscriber nodes**
-
-Open two new terminals. In each, source your ROS2 and workspace installations:
+Source the workspace:
 
 ```bash
-source /opt/ros/foxy/setup.bash
-source ~/ros2_ws/install/setup.bash
+source install/setup.bash
 ```
 
-In one terminal, start the publisher:
+Building the workspace generates executable files from your nodes. Sourcing the workspace allows ROS2 to find these executables.
+
+## Step 7: Run the Nodes
+
+You can now run the publisher node in one terminal:
 
 ```bash
-ros2 run py_pub_sub publisher
+ros2 run video_tutorial video_publisher
 ```
 
-In the other, start the subscriber:
+And the subscriber node in another terminal:
 
 ```bash
-ros2 run py_pub_sub subscriber
+ros2 run video_tutorial video_subscriber
 ```
 
-The subscriber should start printing the messages published by the publisher.
+You should see your video feed displayed in grayscale in a new window.
 
-## Conclusion
+That's it! You've successfully created a ROS2 package with a video publisher and a grayscale converter subscriber. Happy coding!
 
-That's it! You've created a simple ROS2 package with a publisher and subscriber node in Python. Happy coding!
+## License
+
+This project is licensed under the Apache-2.0 License - see the [LICENSE.md](LICENSE.md) file for details
+```
