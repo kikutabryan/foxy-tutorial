@@ -263,6 +263,40 @@ To find `setup.py`, navigate back one directory:
 ```bash
 cd ..
 ```
+Open `setup.py` with a text editor of your choice. The content of the file should look like the following:
+
+```python
+from setuptools import setup
+
+package_name = 'video_tutorial'
+
+setup(
+    name=package_name,
+    version='0.0.0',
+    packages=[package_name],
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    maintainer='your_name',
+    maintainer_email='your_name@todo.todo',
+    description='TODO: Package description',
+    license='TODO: License declaration',
+    tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+        ],
+    },
+)
+```
+
+It is important to replace all the `todo` sections of the code with the appropriate information. Make sure to update the variable `maintainer`, `maintainer_email`, `description`, and `license`. For the license, we will be using an `Apache License 2.0`.
+
+To be able to access the nodes created by console, the console `'scripts_section'` in `entry_points` has to be updated.
+
 
 Open and replace the content of the `setup.py` file located in the `video_tutorial` directory with the following:
 
