@@ -107,11 +107,15 @@ Next, we define our custom node class, `VideoPublisher`:
 class VideoPublisher(Node):
     def __init__(self):
         super().__init__('video_publisher')
+        # We create a publisher that publishes to the "VideoTopic" topic.
+        # We also set the Quality of Service profile to 10.
         self.publisher_ = self.create_publisher(Image, 'VideoTopic', 10)
         timer_period = 0.1  # seconds (10fps)
+        # We create a timer that calls the "timer_callback" function every 0.1 seconds.
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
         self.bridge = CvBridge()
+        # We start capturing video from the webcam.
         self.cap = cv2.VideoCapture(0)
 ```
 
@@ -121,9 +125,12 @@ The callback for the timer is defined in the `timer_callback` method:
 
 ```python
 def timer_callback(self):
+    # We capture a new frame from the webcam.
     ret, frame = self.cap.read()
     if ret:
+        # We convert the frame to an Image message.
         msg = self.bridge.cv2_to_imgmsg(frame, "bgr8")
+        # We publish the Image message.
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing video frame: "%d"' % self.i)
         self.i += 1
@@ -193,6 +200,8 @@ Next, we define our `VideoSubscriber` node:
 class VideoSubscriber(Node):
     def __init__(self):
         super().__init__('video_subscriber')
+        # We create a subscription to the "VideoTopic" topic.
+        # The "listener_callback" function is called whenever a new message is received.
         self.subscription = self.create_subscription(
             Image,
             'VideoTopic',
@@ -208,8 +217,11 @@ Finally, we define the `listener_callback` function:
 
 ```python
 def listener_callback(self, msg):
+    # We convert the Image message to a cv2 image.
     cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+    # We convert the cv2 image to grayscale.
     gray_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+    # We display the grayscale image.
     cv2.imshow('video', gray_image)
     cv2.waitKey(1)
 ```
