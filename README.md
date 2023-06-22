@@ -91,19 +91,19 @@ if __name__ == '__main__':
 
 The following lines are where we import the necessary libraries:
 
-\`\`\`python
+```python
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge
-\`\`\`
+```
 
 `rclpy` is the standard Python library for ROS2. `Node` is the base class for all ROS2 nodes in Python. `Image` is the message type we will use for the video frames. `cv2` is the OpenCV library, which we use to interact with the webcam and capture video frames. `CvBridge` is a ROS library that provides an interface between ROS messages and OpenCV data types.
 
 Next, we define our custom node class, `VideoPublisher`:
 
-\`\`\`python
+```python
 class VideoPublisher(Node):
     def __init__(self):
         super().__init__('video_publisher')
@@ -113,13 +113,13 @@ class VideoPublisher(Node):
         self.i = 0
         self.bridge = CvBridge()
         self.cap = cv2.VideoCapture(0)
-\`\`\`
+```
 
 The `VideoPublisher` class is a custom Node. Upon initialization, it creates a publisher that publishes `Image` messages on the `VideoTopic` topic. The timer is set to call a function every 0.1 seconds, which corresponds to 10 frames per second. The `CvBridge` object is used to convert between ROS Image messages and OpenCV images. The `cv2.VideoCapture(0)` command starts the video capture on the default camera, which is usually the built-in webcam.
 
 The callback for the timer is defined in the `timer_callback` method:
 
-\`\`\`python
+```python
 def timer_callback(self):
     ret, frame = self.cap.read()
     if ret:
@@ -127,13 +127,9 @@ def timer_callback(self):
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing video frame: "%d"' % self.i)
         self.i += 1
-\`\`\`
+```
 
 This function captures a frame from the webcam every time it is called, converts the frame into an `Image` message using `CvBridge`, and publishes the message. It also logs the number of the frame.
-
-The `VideoPublisher` class is a custom Node. Upon initialization, it creates a publisher that publishes `Image` messages on the `VideoTopic` topic.
-
-The `timer_callback` function captures a frame from the webcam every time it is called, converts the frame into an `Image` message, and publishes the message.
 
 ### The Subscriber Node
 
@@ -181,19 +177,19 @@ if __name__ == '__main__':
 
 We start again by importing the necessary libraries:
 
-\`\`\`python
+```python
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge
-\`\`\`
+```
 
 Just like before, `rclpy` is for ROS2, `Node` is for creating our custom ROS2 node, `Image` is the message type, `cv2` is for the OpenCV operations and `CvBridge` is for converting between ROS messages and OpenCV data types.
 
 Next, we define our `VideoSubscriber` node:
 
-\`\`\`python
+```python
 class VideoSubscriber(Node):
     def __init__(self):
         super().__init__('video_subscriber')
@@ -204,26 +200,21 @@ class VideoSubscriber(Node):
             10)
         self.subscription
         self.bridge = CvBridge()
-\`\`\`
+```
 
 The `VideoSubscriber` class is also a custom Node. Upon initialization, it creates a subscription to the `VideoTopic` topic. The `listener_callback` function is called whenever a new message is received on this topic.
 
 Finally, we define the `listener_callback` function:
 
-\`\`\`python
+```python
 def listener_callback(self, msg):
     cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
     gray_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
     cv2.imshow('video', gray_image)
     cv2.waitKey(1)
-\`\`\`
+```
 
 This function is called when a new `Image` message is received. It converts the received `Image` message back into a cv2 image using `CvBridge`, then it converts the image to grayscale using OpenCV's `cvtColor` function, and displays the image using `cv2.imshow`. The `cv2.waitKey(1)` command is necessary to display the image.
-\`\`\`
-
-The `VideoSubscriber` class is also a custom Node. Upon initialization, it creates a subscription to the `VideoTopic` topic. The `listener_callback` function is called whenever a new message is received.
-
-The `listener_callback` function converts the received `Image` message back into a cv2 image, converts the image to grayscale, and displays the image.
 
 ## Step 4: Modifying setup.py
 
