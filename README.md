@@ -101,6 +101,8 @@ if __name__ == '__main__':
     main()
 ```
 
+Make sure to save the changes to the file!
+
 ### Examine the code
 
 The following lines are where we import the necessary libraries:
@@ -201,6 +203,8 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+Make sure to save the changes to the file!
 
 ### Examine the code
 
