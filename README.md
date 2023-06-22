@@ -21,8 +21,8 @@ source /opt/ros/foxy/setup.bash
 If you haven't set up a workspace yet, create a new one:
 
 ```bash
-mkdir ros2_ws/src
-cd ros2_ws/src
+mkdir /ros2_ws/src
+cd /ros2_ws/src
 ```
 
 Next, create a new package named `video_tutorial` with dependencies on `rclpy` and `std_msgs`.
