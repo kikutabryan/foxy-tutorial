@@ -55,7 +55,7 @@ Create a new file named `video_publisher.py`:
 touch video_publisher.py
 ```
 
-Copy and paste the following code into the python file `video_publisher.py`:
+Open the file `video_publisher.py` with a text editor and copy and paste the following code into the python file:
 
 ```python
 import rclpy
@@ -160,7 +160,7 @@ Create a new file named `video_subscriber.py` in the `video_tutorial` directory:
 touch video_subscriber.py
 ```
 
-Copy and paste the following code into the python file `video_subscriber.py`:
+Open the file `video_subscriber.py` with a text editor and copy and paste the following code into the python file:
 
 ```python
 import rclpy
