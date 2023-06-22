@@ -258,7 +258,7 @@ This function is called when a new `Image` message is received. It converts the 
 
 You have to add your node's entry points to the `setup.py` file for the nodes to be correctly linked to your package.
 
-To access teh `setup.py` file, navigate back one directory:
+To open `setup.py`, navigate back one directory:
 
 ```bash
 cd ..
