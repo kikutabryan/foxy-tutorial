@@ -41,9 +41,21 @@ cd video_tutorial
 
 We will write two Python scripts, one for the publisher (`video_publisher.py`) and one for the subscriber (`video_subscriber.py`).
 
+Navigate to the folder with the same name as the newly created package `video_tutorial`:
+
+```bash
+cd video_tutorial
+```
+
 ### The Publisher Node
 
 Create a new file named `video_publisher.py`:
+
+```bash
+touch video_publisher.py
+```
+
+Copy and paste the following code into the python file `video_publisher.py`:
 
 ```python
 import rclpy
@@ -88,6 +100,8 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+### Examine the code
 
 The following lines are where we import the necessary libraries:
 
@@ -140,7 +154,13 @@ This function captures a frame from the webcam every time it is called, converts
 
 ### The Subscriber Node
 
-Create a new file named `video_subscriber.py`:
+Create a new file named `video_subscriber.py` in the `video_tutorial` directory:
+
+```bash
+touch video_subscriber.py
+```
+
+Copy and paste the following code into the python file `video_subscriber.py`:
 
 ```python
 import rclpy
@@ -181,6 +201,8 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
+
+### Examine the code
 
 We start again by importing the necessary libraries:
 
