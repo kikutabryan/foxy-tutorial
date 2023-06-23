@@ -294,14 +294,25 @@ This function is called when a new `Image` message is received. It converts the 
 
 ## Step 4: Modifying setup.py
 
-You have to add your node's entry points to the `setup.py` file for the nodes to be correctly linked to your package.
+The `setup.py` file is used in Python projects to define metadata, dependencies, and configuration for the installation process.
 
-To find `setup.py`, navigate back one directory:
+In summary, it performs the following tasks:
+
+1. Set project metadata: name, version, author, description, license, etc.
+2. Specify project dependencies: other Python packages or libraries required by the project.
+3. Define entry points: functions or scripts that can be invoked from the command line or used as importable modules.
+4. Configure installation options: specifying additional files, package directories, or scripts to include in the distribution.
+5. Provide instructions for building, testing, and distributing the project.
+
+The `setup.py` file, used in conjunction with the `setuptools` package, enables seamless packaging, distribution, and installation of Python projects.
+
+Navigate back one directory to locate `setup.py`:
 
 ```bash
 cd ..
 ```
-Open `setup.py` with a text editor of your choice. The content of the file should look like the following:
+
+Open `setup.py` with a text editor of your choice:
 
 ```python
 from setuptools import setup
@@ -331,7 +342,7 @@ setup(
 )
 ```
 
-It is important to replace all the `todo` sections of the code with the appropriate information. Make sure to update the variable `maintainer`, `maintainer_email`, `description`, and `license`. For the license, we will be using an `Apache License 2.0`.
+Replace all the `TODO` sections of the code with the appropriate metadata. Make sure to update the values for `maintainer`, `maintainer_email`, `description`, and `license`. For the license, we will be using an `Apache License 2.0`.
 
 To be able to access the nodes created by console, the `entry_points` field needs to be updated. The `entry_points` field contains the mapping between the names of your scripts and their location. Modify the `setup.py` file to have the `entry_points` match the following:
 
@@ -350,7 +361,53 @@ Where, `video_publisher` is the console name that will be used to call the comma
 'console_name = package_name.python_script_name:main',
 ```
 
+The final form of the `setup.py` file should be as follows:
+
+```python
+from setuptools import setup
+
+package_name = 'video_tutorial'
+
+setup(
+    name=package_name,
+    version='0.0.0',
+    packages=[package_name],
+    data_files=[
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        ('share/' + package_name, ['package.xml']),
+    ],
+    install_requires=['setuptools'],
+    zip_safe=True,
+    maintainer='your_name',
+    maintainer_email='your_name@todo.todo',
+    description='Example of webcam video publisher and subsciber nodes',
+    license='Apache License 2.0',
+    tests_require=['pytest'],
+    entry_points={
+        'console_scripts': [
+            'video_publisher = video_tutorial.video_publisher:main',
+            'video_subscriber = video_tutorial.video_subscriber:main',
+        ],
+    },
+)
+```
+
 ## Step 5: Modifying package.xml
+
+The `package.xml` file is used in ROS (Robot Operating System) projects to define metadata, dependencies, and build configuration for the package.
+
+In summary, it performs the following tasks:
+
+1. Set package metadata: name, version, description, maintainer, and license information.
+2. Specify package dependencies: other ROS packages that the current package depends on.
+3. Define package build configuration: specifying the build type, build and run dependencies, and any additional build instructions.
+4. Declare package exports: specifying the ROS nodes, libraries, and other artifacts that should be exported and made available to other packages.
+5. Include additional package-level information: such as package authors, URLs, and any package-specific tags or requirements.
+
+The `package.xml` file, along with the accompanying `CMakeLists.txt` file, enables building, packaging, and managing ROS packages, allowing for easy integration and collaboration within the ROS ecosystem.
+
+Open `package.xml` with a text editor of your choice:
 
 ```xml
 <?xml version="1.0"?>
@@ -359,7 +416,7 @@ Where, `video_publisher` is the console name that will be used to call the comma
   <name>video_tutorial</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="bryan@todo.todo">bryan</maintainer>
+  <maintainer email="your_name@todo.todo">your_name</maintainer>
   <license>TODO: License declaration</license>
 
   <depend>rclpy</depend>
@@ -376,26 +433,29 @@ Where, `video_publisher` is the console name that will be used to call the comma
 </package>
 ```
 
-Open the `package.xml` file in your `video_tutorial` directory and make sure to add `sensor_msgs` and `cv_bridge` as dependencies. Your `package.xml` should look like the following:
+You will need to add `sensor_msgs` and `cv_bridge` as dependencies in the file. Place these in the `<depend>` section ensuring that they are wrapped by the statement `<depend>`.
+
+Your `package.xml` should look like the following:
 
 ```xml
 <?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>video_tutorial</name>
   <version>0.0.0</version>
-  <description>My first ROS 2 package</description>
-  <maintainer email="your.email@example.com">Your Name</maintainer>
-  <license>Apache-2.0</license>
-
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <description>TODO: Package description</description>
+  <maintainer email="your_name@todo.todo">your_name</maintainer>
+  <license>Apache License 2.0</license>
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_python</build_type>
