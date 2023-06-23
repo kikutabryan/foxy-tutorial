@@ -2,6 +2,44 @@
 
 This tutorial will guide you through the process of creating a ROS2 package with a publisher and subscriber node in Python. The publisher node captures video from the built-in webcam using OpenCV, then publishes it to a topic. The subscriber node receives the video, converts it to grayscale, and displays it.
 
+## ROS2 Foxy Introduction
+
+ROS2 Foxy is the latest major release of the Robot Operating System 2 (ROS2), a flexible framework for writing robot software. It provides a collection of tools, libraries, and conventions that aim to simplify the development of complex robotic systems. This introduction section will cover the advantages of using ROS, as well as explain some of the basic concepts in ROS2, such as nodes, topics, messages, subscribers, and publishers.
+
+### Advantages of Using ROS
+
+ROS offers several advantages for developing robot software:
+
+1. **Modularity:** ROS follows a modular approach, allowing developers to break down their robot software into smaller, reusable components called nodes. This modular structure enables easy collaboration, code reusability, and scalability.
+
+2. **Communication Infrastructure:** ROS provides a flexible communication infrastructure that enables nodes to exchange data and information seamlessly. It uses a publish-subscribe pattern, allowing decoupled communication between nodes.
+
+3. **Cross-Platform Compatibility:** ROS supports multiple operating systems and programming languages, making it versatile and accessible to a wide range of developers. It allows components written in different languages to communicate with each other.
+
+4. **Large and Active Community:** ROS has a vibrant and supportive community of researchers, developers, and roboticists. It offers a vast ecosystem of packages and libraries, making it easier to leverage existing code and solutions for building complex robotic systems.
+
+### Basic Concepts in ROS2
+
+#### Nodes
+
+In ROS2, a node is a standalone process that performs a specific computation or functionality. Nodes communicate with each other by publishing and subscribing to topics.
+
+#### Topics
+
+Topics are named buses that facilitate communication between nodes. A node can publish data, known as messages, to a topic, and other nodes can receive that data by subscribing to the same topic. Topics follow a publish-subscribe mechanism, allowing multiple nodes to communicate asynchronously.
+
+#### Messages
+
+Messages are the data structures used for communication between nodes. They define the format and type of data exchanged on topics. ROS provides a wide range of predefined message types for common data, such as sensor readings, control commands, and robot poses. Additionally, developers can define custom message types to suit their specific needs.
+
+#### Publishers
+
+A publisher is a node that sends messages on a specific topic. It creates and publishes messages to the topic, allowing other nodes to receive and process the data.
+
+#### Subscribers
+
+A subscriber is a node that receives messages from a specific topic. It subscribes to the topic and processes the incoming messages according to its functionality.
+
 ## Prerequisites
 
 - You need to have ROS2 Foxy installed. If you haven't done this already, follow the official guide [here](https://index.ros.org/doc/ros2/Installation/Foxy/).
@@ -295,7 +333,7 @@ setup(
 
 It is important to replace all the `todo` sections of the code with the appropriate information. Make sure to update the variable `maintainer`, `maintainer_email`, `description`, and `license`. For the license, we will be using an `Apache License 2.0`.
 
-To be able to access the nodes created by console, the console `'scripts_section'` in `entry_points` needs to be updated. Modify the `setup.py` file to have the `entry_points` match the following:
+To be able to access the nodes created by console, the `entry_points` field needs to be updated. The `entry_points` field contains the mapping between the names of your scripts and their location. Modify the `setup.py` file to have the `entry_points` match the following:
 
 ```python
 entry_points={
@@ -306,53 +344,11 @@ entry_points={
 },
 ```
 
-Where, `video_publisher` is the console name that will be used to call the command, `video_tutorial` is the package name, `video_publisher` or `video_subsciber` is the name of the python script file, and lastly, `main` is reference to the main function in the python script.
-
-
-Open and replace the content of the `setup.py` file located in the `video_tutorial` directory with the following:
+Where, `video_publisher` is the console name that will be used to call the command, `video_tutorial` is the package name, `video_publisher` or `video_subsciber` is the name of the python script file, and lastly, `main` is a reference to the main function in the python script. Thus, the format for adding a console script for a ROS2 Foxy node should be as follows:
 
 ```python
-from setuptools import setup
-
-package_name = 'video_tutorial'
-
-setup(
-    name=package_name,
-    version='0.0.0',
-    packages=[],
-    py_modules=[
-        'video_publisher',
-        'video_subscriber',
-    ],
-    install_requires=['setuptools'],
-    zip_safe=True,
-    author='Your Name',
-    author_email='your.email@example.com',
-    maintainer='Your Name',
-    maintainer_email='your.email@example.com',
-    keywords=['ROS'],
-    classifiers=[
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-    ],
-    description='ROS2 video stream publisher and grayscale converter.',
-    license='Apache License, Version 2.0',
-    tests_require=['pytest'],
-    entry_points={
-        'console_scripts': [
-            'video_publisher = video_publisher:main',
-            'video_subscriber = video_subscriber:main',
-        ],
-    },
-)
+'console_name = package_name.python_script_name:main',
 ```
-
-The `entry_points` field contains the mapping between the names of your scripts and their location.
 
 ## Step 5: Modifying package.xml
 
