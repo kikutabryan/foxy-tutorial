@@ -42,7 +42,7 @@ A subscriber, on the other hand, is a type of node that accepts messages from a 
 
 ## Prerequisites
 
-- You need to have ROS2 Foxy installed. If you haven't done this already, follow the official guide [here](https://index.ros.org/doc/ros2/Installation/Foxy/).
+- You need to have ROS2 Foxy installed. If you haven't done this already, follow the official guide [here](https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html).
 - Make sure you have Python3 installed. Most ROS2 distributions require Python3. If you don't have Python3, download it [here](https://www.python.org/downloads/).
 - OpenCV needs to be installed for the video capture functionality. Instructions are [here](https://docs.opencv.org/4.5.0/d2/de6/tutorial_py_setup_in_ubuntu.html).
 
@@ -545,7 +545,13 @@ Now, you can run the publisher node in one terminal:
 ros2 run video_tutorial video_publisher
 ```
 
-And the subscriber node in another terminal:
+Open another terminal and source the workspace:
+
+```bash
+source install/setup.bash
+```
+
+And the subscriber node in the new terminal:
 
 ```bash
 ros2 run video_tutorial video_subscriber
@@ -555,8 +561,9 @@ Running the publisher node starts capturing video frames from the webcam and pub
 
 You should now see your video feed displayed in grayscale in the subscriber terminal window.
 
-Congratulations! You have successfully created a ROS2 package with a video publisher and a grayscale converter subscriber. Feel free to explore and enhance the functionality of your ROS2 project. Happy coding!
+To terminate the program in the terminal, you can press `ctrl` + `c`.
 
+Congratulations! You have successfully created a ROS2 package with a video publisher and a grayscale converter subscriber. Feel free to explore and enhance the functionality of your ROS2 project. Happy coding!
 
 ## License
 
