@@ -520,7 +520,7 @@ The updated `package.xml` file includes the `sensor_msgs` and `cv_bridge` depend
 Navigate to the root of your workspace:
 
 ```bash
-cd ~/ros2_ws
+cd ../..
 ```
 
 Build the workspace:
