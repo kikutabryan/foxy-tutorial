@@ -295,7 +295,18 @@ setup(
 
 It is important to replace all the `todo` sections of the code with the appropriate information. Make sure to update the variable `maintainer`, `maintainer_email`, `description`, and `license`. For the license, we will be using an `Apache License 2.0`.
 
-To be able to access the nodes created by console, the console `'scripts_section'` in `entry_points` has to be updated.
+To be able to access the nodes created by console, the console `'scripts_section'` in `entry_points` needs to be updated. Modify the `setup.py` file to have the `entry_points` match the following:
+
+```python
+entry_points={
+    'console_scripts': [
+        'video_publisher = video_tutorial.video_publisher:main',
+        'video_subscriber = video_tutorial.video_subscriber:main',
+    ],
+},
+```
+
+Where, `video_publisher` is the console name that will be used to call the command, `video_tutorial` is the package name, `video_publisher` or `video_subsciber` is the name of the python script file, and lastly, `main` is reference to the main function in the python script.
 
 
 Open and replace the content of the `setup.py` file located in the `video_tutorial` directory with the following:
