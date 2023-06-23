@@ -352,6 +352,30 @@ Where, `video_publisher` is the console name that will be used to call the comma
 
 ## Step 5: Modifying package.xml
 
+```xml
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>video_tutorial</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="bryan@todo.todo">bryan</maintainer>
+  <license>TODO: License declaration</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
+```
+
 Open the `package.xml` file in your `video_tutorial` directory and make sure to add `sensor_msgs` and `cv_bridge` as dependencies. Your `package.xml` should look like the following:
 
 ```xml
